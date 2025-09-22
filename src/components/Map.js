@@ -24,14 +24,61 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
 export default function Map() {
   const [L, setL] = useState(null);
   const [userPosition, setUserPosition] = useState(null);
-  const [capelas, setCapelas] = useState([]);
+
+  const [capelas] = useState([
+    {
+      id: 1,
+      nome: "Capela São José",
+      horarios: {
+        domingo: [
+          { hora: "08:00", tipo: "Rezada" },
+          { hora: "17:00", tipo: "Cantada" },
+        ],
+        segunda: [{ hora: "18:00", tipo: "Rezada" }],
+        terca: [
+          { hora: "07:00", tipo: "Rezada" },
+          { hora: "19:00", tipo: "Cantada" },
+        ],
+        quarta: [],
+        quinta: [{ hora: "12:00", tipo: "Rezada" }],
+        sexta: [
+          { hora: "07:00", tipo: "Rezada" },
+          { hora: "18:00", tipo: "Cantada" },
+        ],
+        sabado: [
+          { hora: "09:00", tipo: "Rezada" },
+          { hora: "19:00", tipo: "Cantada" },
+        ],
+      },
+      position: [-22.9083, -43.1964],
+    },
+    {
+      id: 2,
+      nome: "Capela Nossa Senhora da Conceição",
+      horarios: {
+        domingo: [
+          { hora: "07:00", tipo: "Rezada" },
+          { hora: "19:00", tipo: "Cantada" },
+        ],
+        segunda: [],
+        terca: [{ hora: "08:00", tipo: "Rezada" }],
+        quarta: [{ hora: "18:00", tipo: "Cantada" }],
+        quinta: [
+          { hora: "07:00", tipo: "Rezada" },
+          { hora: "12:00", tipo: "Cantada" },
+        ],
+        sexta: [{ hora: "19:00", tipo: "Cantada" }],
+        sabado: [{ hora: "09:00", tipo: "Rezada" }],
+      },
+      position: [-22.88655, -43.038011],
+    },
+  ]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const Leaflet = require("leaflet");
       setL(Leaflet);
 
-      // Pega a localização do usuário
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -44,30 +91,6 @@ export default function Map() {
           { enableHighAccuracy: true }
         );
       }
-
-      // Busca as capelas via API
-      fetch("http://127.0.0.1:8000/api/chapels/")
-        .then((res) => res.json())
-        .then((data) => {
-          const formatted = data.map((capela) => ({
-            id: capela.id,
-            nome: capela.name,
-            subtitle: capela.subtitle,
-            priest: capela.priest,
-            miss_type: capela.miss_type,
-            schedule: capela.schedule,
-            phone_number: capela.phone_number,
-            address: capela.address,
-            day_of_week: capela.day_of_week,
-            position: [
-              parseFloat(capela.latitude),
-              parseFloat(capela.longitude),
-            ],
-            photo: capela.photo,
-          }));
-          setCapelas(formatted);
-        })
-        .catch((err) => console.error("Erro ao carregar capelas:", err));
     }
   }, []);
 
@@ -128,14 +151,23 @@ export default function Map() {
               <h3 style={{ fontWeight: "bold", marginBottom: "5px" }}>
                 {capela.nome}
               </h3>
-              {capela.subtitle && <p>{capela.subtitle}</p>}
-              <p>Padre: {capela.priest}</p>
-              <p>Telefone: {capela.phone_number || "Não informado"}</p>
-              <p>Endereço: {capela.address || "Não informado"}</p>
-              <p>Tipo de Missa: {capela.miss_type}</p>
-              <p>Dia da Semana: {capela.day_of_week}</p>
-              <p>Horário: {capela.schedule}</p>
-
+              <div style={{ textAlign: "left" }}>
+                {Object.entries(capela.horarios).map(([dia, horariosDia]) => (
+                  <p key={dia}>
+                    <strong>
+                      {dia.charAt(0).toUpperCase() + dia.slice(1)}:
+                    </strong>{" "}
+                    {horariosDia.length > 0
+                      ? horariosDia.map((h, i) => (
+                          <span key={i}>
+                            {h.hora} ({h.tipo})
+                            {i < horariosDia.length - 1 ? " | " : ""}
+                          </span>
+                        ))
+                      : "Sem missa"}
+                  </p>
+                ))}
+              </div>
               <div className="flex flex-col items-center gap-2 mt-2 w-full">
                 <Link href={`/capelas/${capela.id}`} className="w-full">
                   <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium">
@@ -143,7 +175,7 @@ export default function Map() {
                   </button>
                 </Link>
                 <button
-                  className="w-full bg-grey-200 text-black px-4 py-2 rounded font-medium"
+                  className="w-full bg-grey-200  text-black px-4 py-2 rounded font-medium"
                   onClick={() => {
                     const url = `https://www.google.com/maps/dir/?api=1&destination=${capela.position[0]},${capela.position[1]}`;
                     window.open(url, "_blank");
