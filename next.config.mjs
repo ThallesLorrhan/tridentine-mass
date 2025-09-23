@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  images: {
+    domains: ["thalleslorrhan.pythonanywhere.com"], // ✅ seu host
+  },
+};
 
 export default nextConfig;
