@@ -118,8 +118,6 @@ export default function ChapelMap() {
           keyboardShortcuts: false,
           scaleControl: false,
           gestureHandling: "greedy",
-          minZoom: 10,
-          maxZoom: 16,
         }}
       >
         {chapels.map((chapel) => (
