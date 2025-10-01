@@ -1,5 +1,4 @@
-// src/lib/api.js
-const API_BASE = "https://thalleslorrhan.pythonanywhere.com/api/"; // URL da sua API Django
+const API_BASE = "https://thalleslorrhan.pythonanywhere.com/api/";
 
 export async function fetchChapels() {
   const res = await fetch(`${API_BASE}/chapels/`);

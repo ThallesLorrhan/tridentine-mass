@@ -1,24 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import dynamic from "next/dynamic";
+import SideButtons from "@/components/SideButtons";
 
-// Importa o componente Map só no cliente
-const Map = dynamic(() => import("@/components/Map"), {
-  ssr: false,
-});
+// Importa o Map só no cliente
+const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 export default function Home() {
   return (
-    <main className="flex flex-col h-screen">
-      <section className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white py-6 px-6 text-center">
-        <h1 className="text-4xl font-bold">Missas Tridentinas</h1>
-        <p>Localize capelas que celebram a Missa tradicional</p>
-      </section>
+    <main className="flex flex-col h-screen relative">
+      <Map />
 
-      <div className="flex-1">
-        <Map />
-      </div>
+      {/* SideButtons sobre o mapa */}
+      {/* <div className="absolute top-600 right-4 z-50">
+        <SideButtons />
+      </div> */}
     </main>
   );
 }

@@ -26,3 +26,18 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.leaflet-popup-content-wrapper {
+  background: transparent !important; /* remove fundo branco */
+  box-shadow: none !important;        /* tira sombra extra */
+  border-radius: 0 !important;        /* sem borda arredondada */
+}
+
+.leaflet-popup-tip {
+  display: none !important; /* remove o "bico" do popup */
+}
+
+.leaflet-popup-close-button {
+  display: none !important; /* tira o X */
+}
+

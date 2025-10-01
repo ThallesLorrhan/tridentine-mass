@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["thalleslorrhan.pythonanywhere.com"], // ✅ seu host
+    domains: ["thalleslorrhan.pythonanywhere.com"],
+  },
+  experimental: {
+    turbo: false, // desativa Turbopack, que dá erro com Mapbox
   },
 };
 

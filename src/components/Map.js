@@ -1,121 +1,169 @@
-import dynamic from "next/dynamic";
-import { useState, useEffect } from "react";
-import "leaflet/dist/leaflet.css";
-import { fetchChapels } from "@/lib/api";
-import ChapelPopup from "@/components/ChapelPopup"; // ✅ correção aqui
+"use client";
 
-const MapContainer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.MapContainer),
-  { ssr: false }
-);
-const TileLayer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-const Marker = dynamic(
-  () => import("react-leaflet").then((mod) => mod.Marker),
-  { ssr: false }
-);
-const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
-  ssr: false,
-});
+import { useState, useEffect, useRef } from "react";
+import {
+  GoogleMap,
+  Marker,
+  OverlayView,
+  useJsApiLoader,
+} from "@react-google-maps/api";
+import SideButtons from "@/components/SideButtons";
+import { fetchChapels } from "@/lib/api";
+import ChapelPopup from "@/components/ChapelPopup";
 
 export default function ChapelMap() {
-  const [L, setL] = useState(null);
-  const [userLocation, setUserLocation] = useState(null);
   const [chapels, setChapels] = useState([]);
+  const [userLocation, setUserLocation] = useState(null);
+  const [selectedChapel, setSelectedChapel] = useState(null);
+  const mapRef = useRef(null);
 
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  });
+
+  // Obter localização do usuário em tempo real
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const Leaflet = require("leaflet");
-      setL(Leaflet);
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => setUserLocation([pos.coords.latitude, pos.coords.longitude]),
-          (err) => console.error("Error getting location:", err),
-          { enableHighAccuracy: true }
-        );
-      }
-
-      fetchChapels()
-        .then((data) => {
-          const formatted = data.map((c) => ({
-            id: c.id,
-            name: c.name,
-            position: [parseFloat(c.latitude), parseFloat(c.longitude)],
-            schedule: c.masses.reduce(
-              (acc, m) => {
-                const day = m.day_of_week_display.toLowerCase();
-                if (!acc[day]) acc[day] = [];
-                acc[day].push({ time: m.time, type: m.mass_type_display });
-                return acc;
-              },
-              {
-                sunday: [],
-                monday: [],
-                tuesday: [],
-                wednesday: [],
-                thursday: [],
-                friday: [],
-                saturday: [],
-              }
-            ),
-          }));
-          setChapels(formatted);
-        })
-        .catch((err) => console.error(err));
+    let watchId;
+    if (navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(
+        (pos) =>
+          setUserLocation({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          }),
+        () => setUserLocation({ lat: -22.9083, lng: -43.1964 }), // fallback
+        { enableHighAccuracy: true }
+      );
+    } else {
+      setUserLocation({ lat: -22.9083, lng: -43.1964 }); // fallback
     }
+    return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
-  if (!L) return null;
+  // Buscar capelas
+  useEffect(() => {
+    fetchChapels()
+      .then((data) => {
+        const formatted = data.map((c) => {
+          const schedule = c.masses?.reduce(
+            (acc, m) => {
+              const day = m.day_of_week_display.toLowerCase();
+              if (!acc[day]) acc[day] = [];
+              acc[day].push({ time: m.time, type: m.mass_type_display });
+              return acc;
+            },
+            {
+              sunday: [],
+              monday: [],
+              tuesday: [],
+              wednesday: [],
+              thursday: [],
+              friday: [],
+              saturday: [],
+            }
+          );
 
-  const churchIcon = new L.DivIcon({
-    html: `<div class="bg-white border-2 border-blue-600 rounded-full p-1.5 flex justify-center items-center shadow-md">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="#2563eb" viewBox="0 0 24 24" width="28" height="28">
-        <path d="M12 2L15 6H13V10H11V6H9L12 2ZM6 22V12H4L12 4L20 12H18V22H14V16H10V22H6Z"/>
-      </svg>
-    </div>`,
-    className: "",
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-    popupAnchor: [0, -40],
-  });
+          return {
+            id: c.id,
+            name: c.name,
+            position: {
+              lat: parseFloat(c.latitude),
+              lng: parseFloat(c.longitude),
+            },
+            schedule,
+            raw: { ...c, schedule }, // agora raw tem schedule formatado
+          };
+        });
+        setChapels(formatted);
+      })
+      .catch(console.error);
+  }, []);
 
-  const userIcon = new L.DivIcon({
-    html: `<div class="bg-blue-600 border-2 border-white rounded-full w-4 h-4 shadow-sm"></div>`,
-    className: "",
-    iconSize: [16, 16],
-    iconAnchor: [8, 8],
-  });
+  if (!isLoaded)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Carregando mapa...
+      </div>
+    );
+
+  const chapelIcon = {
+    url: "/mark2.png",
+    scaledSize: new window.google.maps.Size(50, 50), // tamanho maior e mais visível
+    anchor: new window.google.maps.Point(25, 50), // centraliza o ícone embaixo (metade da largura, altura total)
+  };
+
+  const userIcon = {
+    path: window.google.maps.SymbolPath.CIRCLE,
+    scale: 8,
+    fillColor: "#4285F4",
+    fillOpacity: 1,
+    strokeWeight: 2,
+    strokeColor: "#fff",
+  };
+
+  const handleMapClick = () => setSelectedChapel(null);
 
   return (
-    <MapContainer
-      center={userLocation || [-22.9083, -43.1964]}
-      zoom={12}
-      className="h-screen w-full"
-      key={userLocation ? userLocation.join(",") : "default"}
-    >
-      <TileLayer
-        attribution="&copy; OpenStreetMap contributors"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <div className="relative w-full h-screen">
+      <GoogleMap
+        mapContainerClassName="w-full h-full"
+        center={userLocation || { lat: -22.9083, lng: -43.1964 }}
+        zoom={12}
+        onLoad={(map) => (mapRef.current = map)}
+        onClick={handleMapClick}
+        options={{
+          disableDefaultUI: true,
+          streetViewControl: false,
+          mapTypeControl: false,
+          fullscreenControl: false,
+          zoomControl: false,
+          rotateControl: false,
+          clickableIcons: false,
+          keyboardShortcuts: false,
+          scaleControl: false,
+        }}
+      >
+        {chapels.map((chapel) => (
+          <Marker
+            key={chapel.id}
+            position={chapel.position}
+            onClick={(e) => {
+              e.domEvent.stopPropagation();
+              setSelectedChapel(chapel);
+            }}
+            icon={chapelIcon}
+          />
+        ))}
 
-      {chapels.map((chapel) => (
-        <Marker key={chapel.id} position={chapel.position} icon={churchIcon}>
-          <Popup>
-            <ChapelPopup chapel={chapel} /> {/* ✅ usa o componente correto */}
-          </Popup>
-        </Marker>
-      ))}
+        {selectedChapel && mapRef.current && (
+          <OverlayView
+            position={selectedChapel.position}
+            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            map={mapRef.current}
+          >
+            <div className="flex justify-center pointer-events-auto -translate-y-full">
+              <div className="translate-y-[-50px]">
+                <ChapelPopup chapel={selectedChapel.raw} />
+              </div>
+            </div>
+          </OverlayView>
+        )}
 
-      {userLocation && (
-        <Marker position={userLocation} icon={userIcon}>
-          <Popup>
-            <strong>You are here!</strong>
-          </Popup>
-        </Marker>
-      )}
-    </MapContainer>
+        {userLocation && <Marker position={userLocation} icon={userIcon} />}
+      </GoogleMap>
+
+      <div className="absolute top-[550px] right-2 z-50">
+        <SideButtons
+          onCenterUser={() => {
+            if (mapRef.current && userLocation) {
+              mapRef.current.panTo(userLocation);
+              mapRef.current.setZoom(14); // opcional: aumenta o zoom ao centralizar
+            } else {
+              console.warn("Mapa ou localização do usuário não disponível");
+            }
+          }}
+        />
+      </div>
+    </div>
   );
 }
