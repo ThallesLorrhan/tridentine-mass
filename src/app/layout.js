@@ -41,7 +41,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className={`${inter.variable} antialiased bg-white`}>
+      <body className={`${inter.variable} antialiased bg-white fullscreen`}>
         {children}
       </body>
     </html>
