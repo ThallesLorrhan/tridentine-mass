@@ -105,7 +105,7 @@ export default function ChapelMap() {
 
   return (
     <div className="relative w-full h-screen">
-      <SearchBar />
+      {/* <SearchBar /> */}
 
       <GoogleMap
         mapContainerClassName="w-full h-full"
@@ -131,7 +131,7 @@ export default function ChapelMap() {
             key={chapel.id}
             position={chapel.position}
             onClick={(e) => {
-              e.domEvent.stopPropagation();
+              e.domEvent.stopPropagation(); // impede o clique do mapa
               setSelectedChapel(chapel);
             }}
             icon={chapelIcon}
@@ -144,12 +144,16 @@ export default function ChapelMap() {
             mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
             map={mapRef.current}
           >
-            <div className="flex justify-center pointer-events-auto -translate-y-full">
-              <div
-                className="translate-y-[-50px]"
-                onClick={(e) => e.stopPropagation()} // previne fechar ao clicar dentro
-                style={{ touchAction: "auto" }} // permite interações no mobile
-              >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                pointerEvents: "auto",
+                touchAction: "auto",
+              }}
+              // onClickCapture={(e) => e.stopPropagation()} // <-- REMOVA esta linha
+            >
+              <div className="translate-y-[-215px]">
                 <ChapelPopup chapel={selectedChapel.raw} />
               </div>
             </div>

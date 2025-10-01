@@ -1,22 +1,14 @@
-// ChapelPopup.js
 import React from "react";
 import Link from "next/link";
 
 export default function ChapelPopup({ chapel }) {
   if (!chapel) return null;
 
-  // Ajuste para pegar os horários
   const daysWithMass = chapel.schedule
     ? Object.entries(chapel.schedule).filter(
         ([_, daySchedule]) => daySchedule.length > 0
       )
     : [];
-
-  // Ajuste para posição da capela
-  const lat =
-    chapel.position?.lat || (chapel.position ? chapel.position[0] : 0);
-  const lng =
-    chapel.position?.lng || (chapel.position ? chapel.position[1] : 0);
 
   return (
     <div
@@ -51,14 +43,15 @@ export default function ChapelPopup({ chapel }) {
       <div className="flex justify-between gap-2">
         <Link
           href={`/chapels/${chapel.id}`}
-          className="flex-1 bg-[#800020]/80 px-3 py-2 rounded-3xl text-sm font-medium hover:bg-[#a00028] text-white text-center no-underline transition"
+          className="flex-1 bg-[#800020]/80 px-3 py-2 rounded-3xl text-sm font-medium hover:bg-[#a00028] text-white text-center no-underline transition pointer-events-auto"
         >
           Informações
         </Link>
 
         <button
-          className="flex-1 bg-[#800020]/80 text-white px-3 py-2 rounded-3xl text-sm font-medium hover:bg-[#a00028] transition"
-          onClick={() => {
+          className="flex-1 bg-[#800020]/80 text-white px-3 py-2 rounded-3xl text-sm font-medium hover:bg-[#a00028] transition pointer-events-auto"
+          onClick={(e) => {
+            e.stopPropagation(); // garante que o clique não feche o popup
             const url = `https://www.google.com/maps/dir/?api=1&destination=${chapel.latitude},${chapel.longitude}`;
             window.open(url, "_blank");
           }}
