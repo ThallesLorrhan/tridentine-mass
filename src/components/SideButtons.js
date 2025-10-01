@@ -10,7 +10,7 @@ export default function SideButtons({ onCompass, onCenterUser, onAddPage }) {
   return (
     <div className="absolute z-50 right-2 top-1/2 flex flex-col gap-3 -translate-y-1/2">
       {/* Botão Union - Ajustar bússola */}
-      {/* <button
+      <button
         onClick={onCompass}
         className="w-12 h-12 bg-[#800020]/80 rounded-full shadow-md flex items-center justify-center hover:bg-gray-100 transition"
       >
@@ -21,7 +21,7 @@ export default function SideButtons({ onCompass, onCenterUser, onAddPage }) {
           height={24}
           className="object-contain"
         />
-      </button> */}
+      </button>
 
       {/* Botão Remap - Centralizar usuário */}
       <button

@@ -10,6 +10,7 @@ import {
 import SideButtons from "@/components/SideButtons";
 import { fetchChapels } from "@/lib/api";
 import ChapelPopup from "@/components/ChapelPopup";
+import SearchBar from "./SearchBar";
 
 export default function ChapelMap() {
   const [chapels, setChapels] = useState([]);
@@ -21,7 +22,7 @@ export default function ChapelMap() {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
 
-  // Obter localização do usuário em tempo real
+  // Pegar localização do usuário apenas uma vez
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -69,7 +70,7 @@ export default function ChapelMap() {
               lng: parseFloat(c.longitude),
             },
             schedule,
-            raw: { ...c, schedule }, // agora raw tem schedule formatado
+            raw: { ...c, schedule },
           };
         });
         setChapels(formatted);
@@ -86,8 +87,8 @@ export default function ChapelMap() {
 
   const chapelIcon = {
     url: "/mark2.png",
-    scaledSize: new window.google.maps.Size(50, 50), // tamanho maior e mais visível
-    anchor: new window.google.maps.Point(25, 50), // centraliza o ícone embaixo (metade da largura, altura total)
+    scaledSize: new window.google.maps.Size(50, 50),
+    anchor: new window.google.maps.Point(25, 50),
   };
 
   const userIcon = {
@@ -99,10 +100,13 @@ export default function ChapelMap() {
     strokeColor: "#fff",
   };
 
+  // Fecha popup ao clicar fora
   const handleMapClick = () => setSelectedChapel(null);
 
   return (
     <div className="relative w-full h-screen">
+      <SearchBar />
+
       <GoogleMap
         mapContainerClassName="w-full h-full"
         center={userLocation || { lat: -22.9083, lng: -43.1964 }}
@@ -119,7 +123,7 @@ export default function ChapelMap() {
           clickableIcons: false,
           keyboardShortcuts: false,
           scaleControl: false,
-          gestureHandling: "greedy",
+          gestureHandling: "greedy", // permite um dedo no mobile
         }}
       >
         {chapels.map((chapel) => (
@@ -141,7 +145,11 @@ export default function ChapelMap() {
             map={mapRef.current}
           >
             <div className="flex justify-center pointer-events-auto -translate-y-full">
-              <div className="translate-y-[-50px]">
+              <div
+                className="translate-y-[-50px]"
+                onClick={(e) => e.stopPropagation()} // previne fechar ao clicar dentro
+                style={{ touchAction: "auto" }} // permite interações no mobile
+              >
                 <ChapelPopup chapel={selectedChapel.raw} />
               </div>
             </div>
@@ -156,7 +164,7 @@ export default function ChapelMap() {
           onCenterUser={() => {
             if (mapRef.current && userLocation) {
               mapRef.current.panTo(userLocation);
-              mapRef.current.setZoom(14); // opcional: aumenta o zoom ao centralizar
+              mapRef.current.setZoom(14);
             } else {
               console.warn("Mapa ou localização do usuário não disponível");
             }
