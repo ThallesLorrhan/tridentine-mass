@@ -7,9 +7,5 @@ import SideButtons from "@/components/SideButtons";
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 export default function Home() {
-  return (
-    <main className="flex flex-col h-screen relative">
-      <Map />
-    </main>
-  );
+  return <Map />;
 }

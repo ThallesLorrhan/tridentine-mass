@@ -15,6 +15,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
       <head>
+        <meta name="color-scheme" content="light"></meta>
         <link
           href="https://fonts.googleapis.com/css2?family=Italianno&display=swap"
           rel="stylesheet"
