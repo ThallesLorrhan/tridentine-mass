@@ -23,9 +23,8 @@ export default function ChapelMap() {
 
   // Obter localização do usuário em tempo real
   useEffect(() => {
-    let watchId;
     if (navigator.geolocation) {
-      watchId = navigator.geolocation.watchPosition(
+      navigator.geolocation.getCurrentPosition(
         (pos) =>
           setUserLocation({
             lat: pos.coords.latitude,
@@ -37,7 +36,6 @@ export default function ChapelMap() {
     } else {
       setUserLocation({ lat: -22.9083, lng: -43.1964 }); // fallback
     }
-    return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
   // Buscar capelas
@@ -121,6 +119,7 @@ export default function ChapelMap() {
           clickableIcons: false,
           keyboardShortcuts: false,
           scaleControl: false,
+          gestureHandling: "greedy",
         }}
       >
         {chapels.map((chapel) => (
