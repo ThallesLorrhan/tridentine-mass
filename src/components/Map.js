@@ -10,7 +10,6 @@ import {
 import SideButtons from "@/components/SideButtons";
 import { fetchChapels } from "@/lib/api";
 import ChapelPopup from "@/components/ChapelPopup";
-import SearchBar from "./SearchBar";
 
 export default function ChapelMap() {
   const [chapels, setChapels] = useState([]);
@@ -22,7 +21,6 @@ export default function ChapelMap() {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
 
-  // Pegar localização do usuário apenas uma vez
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -31,15 +29,14 @@ export default function ChapelMap() {
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
           }),
-        () => setUserLocation({ lat: -22.9083, lng: -43.1964 }), // fallback
+        () => setUserLocation({ lat: -22.9083, lng: -43.1964 }),
         { enableHighAccuracy: true }
       );
     } else {
-      setUserLocation({ lat: -22.9083, lng: -43.1964 }); // fallback
+      setUserLocation({ lat: -22.9083, lng: -43.1964 });
     }
   }, []);
 
-  // Buscar capelas
   useEffect(() => {
     fetchChapels()
       .then((data) => {
@@ -100,13 +97,10 @@ export default function ChapelMap() {
     strokeColor: "#fff",
   };
 
-  // Fecha popup ao clicar fora
   const handleMapClick = () => setSelectedChapel(null);
 
   return (
     <div className="relative w-full h-screen">
-      {/* <SearchBar /> */}
-
       <GoogleMap
         mapContainerClassName="w-full h-full"
         center={userLocation || { lat: -22.9083, lng: -43.1964 }}
@@ -123,7 +117,7 @@ export default function ChapelMap() {
           clickableIcons: false,
           keyboardShortcuts: false,
           scaleControl: false,
-          gestureHandling: "greedy", // permite um dedo no mobile
+          gestureHandling: "greedy",
         }}
       >
         {chapels.map((chapel) => (
@@ -131,7 +125,7 @@ export default function ChapelMap() {
             key={chapel.id}
             position={chapel.position}
             onClick={(e) => {
-              e.domEvent.stopPropagation(); // impede o clique do mapa
+              e.domEvent.stopPropagation();
               setSelectedChapel(chapel);
             }}
             icon={chapelIcon}
@@ -151,9 +145,10 @@ export default function ChapelMap() {
                 pointerEvents: "auto",
                 touchAction: "auto",
               }}
-              // onClickCapture={(e) => e.stopPropagation()} // <-- REMOVA esta linha
+              onClick={(e) => e.stopPropagation()} // evita fechar ao clicar dentro
+              onTouchStart={(e) => e.stopPropagation()} // mobile
             >
-              <div className="translate-y-[-215px]">
+              <div className="translate-y-[-220px]">
                 <ChapelPopup chapel={selectedChapel.raw} />
               </div>
             </div>
