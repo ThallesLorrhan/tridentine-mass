@@ -2,7 +2,7 @@
 import { Inter } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react"; // ✅ Importa o Analytics
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -15,6 +15,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" style={{ colorScheme: "light" }}>
       <head>
+        {/* Força modo claro e impede zoom no mobile */}
         <meta name="color-scheme" content="light" />
         <meta
           name="viewport"
@@ -24,10 +25,29 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Italianno&display=swap"
           rel="stylesheet"
         />
+
+        {/* Google Analytics GA4 */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-E75C2P2Y7Y"
+        ></script>
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // Bloqueia zoom com Ctrl + + / Ctrl + - e scroll no desktop
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-E75C2P2Y7Y', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
+
+        {/* Bloqueia zoom no desktop */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
               window.addEventListener('wheel', function(e) {
                 if (e.ctrlKey) e.preventDefault();
               }, { passive: false });
@@ -43,7 +63,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${inter.variable} antialiased bg-white fullscreen`}>
         {children}
-        <Analytics />
+        <Analytics /> {/* Vercel Analytics */}
       </body>
     </html>
   );
