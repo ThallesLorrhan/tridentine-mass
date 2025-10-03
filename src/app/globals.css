@@ -52,11 +52,30 @@ body {
   padding-right: env(safe-area-inset-right);
 }
 
-/* Ajusta altura real */
-.fullscreen {
-  height: 100vh;
-  height: calc(var(--vh, 1vh) * 100);
-  overflow-x: hidden;
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
+
+::-webkit-scrollbar-button {
+  display: none; /* tira as setas */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #800020;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #800020 #f1f1f1;
+}
+
+
 
 

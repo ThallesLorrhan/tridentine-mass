@@ -51,7 +51,7 @@ export default function ChapelPopup({ chapel }) {
         <button
           className="flex-1 bg-[#800020]/80 text-white px-3 py-2 rounded-3xl text-sm font-medium hover:bg-[#a00028] transition pointer-events-auto"
           onClick={(e) => {
-            e.stopPropagation(); // garante que o clique não feche o popup
+            e.stopPropagation();
             const url = `https://www.google.com/maps/dir/?api=1&destination=${chapel.latitude},${chapel.longitude}`;
             window.open(url, "_blank");
           }}
