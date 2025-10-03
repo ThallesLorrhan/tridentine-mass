@@ -51,15 +51,16 @@ export default function ChapelPage() {
         </h1>
       </div>
 
-      <div className="flex flex-col items-left mt-5">
+      {/* <div className="flex flex-col items-left mt-5">
         <h2 className="text-xl text-[#800020]">Nome</h2>
         <p className="mt-5 text-left text-sm ">{chapel.name}</p>
       </div>
 
-      <div className="border-t border-gray-300" />
+      <div className="border-t border-gray-300" /> */}
 
       <div className="flex flex-col items-left">
         <h2 className="text-xl text-[#800020]">Endereço</h2>
+        {/* add street name */}
         {(chapel.address || chapel.city || chapel.state || chapel.country) && (
           <p className="mt-5 text-left text-sm">
             {[chapel.address, chapel.city, chapel.state, chapel.country]
@@ -67,6 +68,33 @@ export default function ChapelPage() {
               .join(", ")}
           </p>
         )}
+      </div>
+
+      <div className="border-t border-gray-300" />
+
+      <div className="flex flex-col">
+        <h2 className="text-xl text-[#800020]">Horário das Missas</h2>
+        <div className="mt-5">
+          {schedule && Object.keys(schedule).length > 0 ? (
+            Object.entries(schedule).map(([day, daySchedule]) => (
+              <p key={day} className="text-left text-sm">
+                <strong>{day.charAt(0).toUpperCase() + day.slice(1)}:</strong>{" "}
+                {daySchedule.length > 0
+                  ? daySchedule
+                      .map((s) => {
+                        const [hour, min] = s.time.split(":");
+                        const h = hour.padStart(2, "0");
+                        const m = min || "00";
+                        return `${h}:${m} (${s.type})`;
+                      })
+                      .join(" | ")
+                  : "Sem Missa"}
+              </p>
+            ))
+          ) : (
+            <p className="text-gray-500">Sem horários cadastrados.</p>
+          )}
+        </div>
       </div>
 
       <div className="border-t border-gray-300" />
@@ -105,31 +133,6 @@ export default function ChapelPage() {
       </div>
 
       <div className="border-t border-gray-300" />
-
-      <div className="flex flex-col">
-        <h2 className="text-xl text-[#800020]">Horário das Missas</h2>
-        <div className="mt-5">
-          {schedule && Object.keys(schedule).length > 0 ? (
-            Object.entries(schedule).map(([day, daySchedule]) => (
-              <p key={day} className="text-left text-sm">
-                <strong>{day.charAt(0).toUpperCase() + day.slice(1)}:</strong>{" "}
-                {daySchedule.length > 0
-                  ? daySchedule
-                      .map((s) => {
-                        const [hour, min] = s.time.split(":");
-                        const h = hour.padStart(2, "0");
-                        const m = min || "00";
-                        return `${h}:${m} (${s.type})`;
-                      })
-                      .join(" | ")
-                  : "Sem Missa"}
-              </p>
-            ))
-          ) : (
-            <p className="text-gray-500">Sem horários cadastrados.</p>
-          )}
-        </div>
-      </div>
 
       <div className="border-t border-gray-300" />
 
@@ -182,7 +185,7 @@ export default function ChapelPage() {
           window.open(url, "_blank");
         }}
       >
-        Ver Direções
+        Ver Rotas no Google Maps
       </button>
     </div>
   );

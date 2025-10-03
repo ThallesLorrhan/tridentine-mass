@@ -39,7 +39,7 @@ export default function SideButtons({ onCompass, onCenterUser, onAddPage }) {
 
       {/* Botão Add - Ir para página */}
       <button
-        onClick={() => router.push("/chapels")}
+        onClick={() => router.push("/add-chapels")}
         className="w-12 h-12 bg-[#800020]/80 rounded-full shadow-md flex items-center justify-center hover:bg-gray-100 transition"
       >
         <Image
