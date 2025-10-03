@@ -15,12 +15,14 @@ export default function ChapelPopup({ chapel }) {
       style={{ minWidth: "200px", maxWidth: "300px" }}
       className="bg-white/90 flex flex-col p-3 rounded-3xl shadow-lg border border-[#800020]"
     >
-      {/* Título */}
-      <h3 className="font-[Italianno] text-2xl text-[#800020] mb-2 text-center">
+      <h3 className="font-[Italianno] text-2xl text-[#800020]  text-center">
         {chapel.name}
       </h3>
 
-      {/* Horários */}
+      <div className="text-xs text-gray-700 text-center mb-2">
+        <p>FSSPX</p>
+      </div>
+
       <div className="text-sm mb-3 space-y-1 text-gray-700">
         {daysWithMass.length > 0 ? (
           daysWithMass.map(([day, daySchedule]) => (
@@ -31,7 +33,7 @@ export default function ChapelPopup({ chapel }) {
               {": "}
               {daySchedule
                 .map((s) => `${s.time.slice(0, 5)} (${s.type})`)
-                .join(", ")}
+                .join(" | ")}
             </p>
           ))
         ) : (
@@ -39,7 +41,6 @@ export default function ChapelPopup({ chapel }) {
         )}
       </div>
 
-      {/* Botões */}
       <div className="flex justify-between gap-2">
         <Link
           href={`/chapels/${chapel.id}`}
