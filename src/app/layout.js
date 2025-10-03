@@ -2,6 +2,7 @@
 import { Inter } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react"; // ✅ Importa o Analytics
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -14,7 +15,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" style={{ colorScheme: "light" }}>
       <head>
-        {/* Força modo claro e impede zoom no mobile */}
         <meta name="color-scheme" content="light" />
         <meta
           name="viewport"
@@ -43,6 +43,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${inter.variable} antialiased bg-white fullscreen`}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
