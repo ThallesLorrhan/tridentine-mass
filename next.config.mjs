@@ -1,10 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["thalleslorrhan.pythonanywhere.com"],
-  },
-  experimental: {
-    turbo: false, // desativa Turbopack, que dá erro com Mapbox
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "thalleslorrhan.pythonanywhere.com",
+        port: "",
+        pathname: "/media/**",
+      },
+    ],
   },
 };
 

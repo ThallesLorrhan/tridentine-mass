@@ -1,25 +1,18 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import {
-  GoogleMap,
-  Marker,
-  OverlayView,
-  useJsApiLoader,
-} from "@react-google-maps/api";
+import { GoogleMap, Marker, OverlayView } from "@react-google-maps/api";
 import SideButtons from "@/components/SideButtons";
 import { fetchChapels } from "@/lib/api";
 import ChapelPopup from "@/components/ChapelPopup";
+import { useGoogleMaps } from "@/context/GoogleMapsProvider";
 
 export default function ChapelMap() {
+  const { isLoaded } = useGoogleMaps();
   const [chapels, setChapels] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [selectedChapel, setSelectedChapel] = useState(null);
   const mapRef = useRef(null);
-
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-  });
 
   useEffect(() => {
     if (navigator.geolocation) {

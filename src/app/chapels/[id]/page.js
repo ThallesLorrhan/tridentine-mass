@@ -60,10 +60,21 @@ export default function ChapelPage() {
 
       <div className="flex flex-col items-left">
         <h2 className="text-xl text-[#800020]">Endereço</h2>
-        {/* add street name */}
-        {(chapel.address || chapel.city || chapel.state || chapel.country) && (
+        {(chapel.street ||
+          chapel.number ||
+          chapel.neighborhood ||
+          chapel.city ||
+          chapel.state ||
+          chapel.country) && (
           <p className="mt-5 text-left text-sm">
-            {[chapel.address, chapel.city, chapel.state, chapel.country]
+            {[
+              chapel.street,
+              chapel.number,
+              chapel.neighborhood,
+              chapel.city,
+              chapel.state,
+              chapel.country,
+            ]
               .filter(Boolean)
               .join(", ")}
           </p>
@@ -153,7 +164,17 @@ export default function ChapelPage() {
 
       <div className="flex flex-col">
         <h2 className="text-xl text-[#800020]">Grupo Celebrante</h2>
-        <p className="mt-5 text-sm ">FSSPX</p>
+        {chapel.celebrant_group && (
+          <p className="mt-5 text-left text-sm">
+            <a
+              href={chapel.celebrant_group}
+              target="_blank"
+              className="text-blue-600 underline"
+            >
+              {chapel.celebrant_group}
+            </a>
+          </p>
+        )}
       </div>
 
       <div className="border-t border-gray-300" />
@@ -166,7 +187,7 @@ export default function ChapelPage() {
             className="mt-5 w-full max-w-[600px] mx-auto overflow-hidden rounded-lg shadow"
           >
             <Image
-              src={img.image}
+              src={img.image} // já é URL completa
               alt={img.caption || chapel.name}
               width={600}
               height={400}

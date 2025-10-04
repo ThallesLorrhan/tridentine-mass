@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-export default function SideButtons({ onCompass, onCenterUser, onAddPage }) {
+export default function SideButtons({ onCompass, onCenterUser }) {
   const router = useRouter();
 
   return (

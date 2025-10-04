@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
+import { GoogleMapsProvider } from "@/context/GoogleMapsProvider"; // ✅ adiciona aqui
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -61,8 +62,10 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
+
       <body className={`${inter.variable} antialiased bg-white fullscreen`}>
-        {children}
+        {/* ✅ Envolve tudo com o provider global do Google Maps */}
+        <GoogleMapsProvider>{children}</GoogleMapsProvider>
         <Analytics /> {/* Vercel Analytics */}
       </body>
     </html>

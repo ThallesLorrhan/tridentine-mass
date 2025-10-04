@@ -10,6 +10,8 @@ export default function ChapelPopup({ chapel }) {
       )
     : [];
 
+  console.log("Schedule do popup:", chapel.schedule);
+
   return (
     <div
       style={{ minWidth: "200px", maxWidth: "300px" }}
@@ -20,7 +22,7 @@ export default function ChapelPopup({ chapel }) {
       </h3>
 
       <div className="text-xs text-gray-700 text-center mb-2">
-        <p>FSSPX</p>
+        <p>{chapel.celebrant_group}</p>
       </div>
 
       <div className="text-sm mb-3 space-y-1 text-gray-700">
