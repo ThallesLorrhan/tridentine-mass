@@ -31,21 +31,37 @@ export default function AddChapel() {
   });
 
   // Pega valores da URL se vierem de search-map
+  // Pega valores da URL se vierem de search-map
   useEffect(() => {
-    if (!searchParams) return;
+    // A remoção do 'if (!searchParams) return;' simplifica e não é necessária aqui.
+
+    // Função auxiliar para obter um valor numérico ou retornar o valor anterior
+    const getNumericParam = (key, prevValue) => {
+      const param = searchParams.get(key);
+      // Se o parâmetro for nulo ou uma string vazia, usa o valor anterior (prevValue)
+      if (param === null || param === "") {
+        return prevValue;
+      }
+      // Tenta converter para float; se não for um número válido (NaN), usa o valor anterior
+      const value = parseFloat(param);
+      return isNaN(value) ? prevValue : value;
+    };
 
     setForm((prev) => ({
       ...prev,
+      // String parameters: use the new value if available, otherwise keep the previous one
       street: searchParams.get("street") || prev.street,
       number: searchParams.get("number") || prev.number,
       neighborhood: searchParams.get("neighborhood") || prev.neighborhood,
       city: searchParams.get("city") || prev.city,
       state: searchParams.get("state") || prev.state,
       country: searchParams.get("country") || prev.country,
-      latitude: parseFloat(searchParams.get("latitude") || prev.latitude),
-      longitude: parseFloat(searchParams.get("longitude") || prev.longitude),
+
+      // Numeric parameters: using the safer helper function
+      latitude: getNumericParam("latitude", prev.latitude),
+      longitude: getNumericParam("longitude", prev.longitude),
     }));
-  }, [searchParams]);
+  }, [searchParams]); // Dependência correta
 
   const handleSelectLocation = () => {
     router.push("/search-map");
@@ -230,8 +246,8 @@ export default function AddChapel() {
           onChange={(e) => setForm({ ...form, country: e.target.value })}
           className="border-none p-2 mt-5 rounded-full w-full bg-gray-200 focus:ring-2 focus:ring-[#800020] focus:outline-none"
         />
-        <p>Latitude: {form.latitude ?? "não definido"}</p>
-        <p>Longitude: {form.longitude ?? "não definido"}</p>
+        {/* <p>Latitude: {form.latitude ?? "não definido"}</p>
+        <p>Longitude: {form.longitude ?? "não definido"}</p> */}
         {/* <input type="text" name="latitude" value={form.latitude} />
         <input type="text" name="longitude" value={form.longitude} /> */}
 
