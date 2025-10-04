@@ -148,7 +148,7 @@ export default function SearchMapPage() {
         )}
       </GoogleMap>
 
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
         <button
           onClick={handleConfirmLocation}
           className="bg-[#800020]/80 text-white px-4 py-2 rounded-3xl text-md font-medium hover:bg-[#a00028] transition pointer-events-auto"
